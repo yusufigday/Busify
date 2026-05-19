@@ -3,6 +3,8 @@ package com.yusufgun.busify.service;
 import com.yusufgun.busify.dto.RegisterRequest;
 import com.yusufgun.busify.dto.UserResponse;
 import com.yusufgun.busify.entity.User;
+import com.yusufgun.busify.exception.ResourceAlreadyExistsException;
+import com.yusufgun.busify.exception.ResourceNotFoundException;
 import com.yusufgun.busify.mapper.UserMapper;
 import com.yusufgun.busify.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
@@ -26,14 +28,14 @@ public class UserService {
                 .collect(Collectors.toList());
     }
 
-    public UserResponse register(RegisterRequest request){
+    public UserResponse register(RegisterRequest request) {
 
-        if (userRepository.existsByEmail(request.getEmail())){
-            throw new RuntimeException("Email already exists");
+        if (userRepository.existsByEmail(request.getEmail())) {
+            throw new ResourceAlreadyExistsException("Email already exists");
         }
 
-        if (userRepository.existsByTcNo(request.getTcNo())){
-            throw new RuntimeException("TC No already exists");
+        if (userRepository.existsByTcNo(request.getTcNo())) {
+            throw new ResourceAlreadyExistsException("TC No already exists");
         }
 
         User user = new User();
@@ -51,14 +53,18 @@ public class UserService {
 
     public UserResponse getUser(String tcNo) {
         User user = userRepository.findByTcNo(tcNo)
-                .orElseThrow(() -> new RuntimeException("User not found with this TC No: " + tcNo));
+                .orElseThrow(() -> new ResourceNotFoundException("User not found with this TC No: " + tcNo));
 
         return userMapper.toUserResponse(user);
     }
 
     public UserResponse updateUser(String tcNo, RegisterRequest updatedUser) {
         User user = userRepository.findByTcNo(tcNo)
-                .orElseThrow(() -> new RuntimeException("User not found with this TC No: " + tcNo));
+                .orElseThrow(() -> new ResourceNotFoundException("User not found with this TC No: " + tcNo));
+
+        if (!user.getEmail().equals(updatedUser.getEmail()) && userRepository.existsByEmail(updatedUser.getEmail())) {
+           throw new ResourceAlreadyExistsException("Email already exists");
+        }
 
         user.setFirstName(updatedUser.getFirstName());
         user.setLastName(updatedUser.getLastName());
@@ -71,7 +77,7 @@ public class UserService {
 
     public void deleteUser(String tcNo) {
         User user = userRepository.findByTcNo(tcNo)
-                .orElseThrow(() -> new RuntimeException("User not found with this TC No: " + tcNo));
+                .orElseThrow(() -> new ResourceNotFoundException("User not found with this TC No: " + tcNo));
 
         userRepository.delete(user);
     }

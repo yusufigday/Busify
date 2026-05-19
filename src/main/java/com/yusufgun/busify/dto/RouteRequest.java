@@ -1,6 +1,7 @@
 package com.yusufgun.busify.dto;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
+import jakarta.validation.constraints.NotNull;
 import lombok.Data;
 
 import java.time.LocalDate;
@@ -18,5 +19,8 @@ public class RouteRequest {
     private LocalTime departureTime;
 
     private Double price;
+
+    @NotNull(message = "Bus ID cannot be null")
+    private Long busId;
 
 }

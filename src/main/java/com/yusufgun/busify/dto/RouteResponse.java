@@ -1,6 +1,7 @@
 package com.yusufgun.busify.dto;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
+import jakarta.validation.constraints.NotNull;
 import lombok.Data;
 
 import java.time.LocalDate;
@@ -20,5 +21,6 @@ public class RouteResponse {
     private LocalTime departureTime;
 
     private Double price;
+
 
 }

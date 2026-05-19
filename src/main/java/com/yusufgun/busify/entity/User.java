@@ -1,5 +1,6 @@
 package com.yusufgun.busify.entity;
 
+import com.yusufgun.busify.enums.Role;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -26,6 +27,8 @@ public class User {
     private String tcNo;
 
     private String password;
-    private String role = "USER";
+
+    @Enumerated(EnumType.STRING)
+    private Role role = Role.USER;
 
 }

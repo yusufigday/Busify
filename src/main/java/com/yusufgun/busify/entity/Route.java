@@ -25,4 +25,8 @@ public class Route {
     private LocalTime departureTime;
     private Double price;
 
+    @ManyToOne
+    @JoinColumn(name = "bus_id", nullable = false)
+    private Bus bus;
+
 }
