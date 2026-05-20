@@ -1,6 +1,6 @@
 package com.yusufgun.busify.mapper;
 
-import com.yusufgun.busify.dto.RouteResponse;
+import com.yusufgun.busify.dto.response.RouteResponse;
 import com.yusufgun.busify.entity.Route;
 import org.springframework.stereotype.Component;
 

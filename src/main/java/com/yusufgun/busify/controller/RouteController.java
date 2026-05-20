@@ -1,7 +1,7 @@
 package com.yusufgun.busify.controller;
 
-import com.yusufgun.busify.dto.RouteRequest;
-import com.yusufgun.busify.dto.RouteResponse;
+import com.yusufgun.busify.dto.request.RouteRequest;
+import com.yusufgun.busify.dto.response.RouteResponse;
 import com.yusufgun.busify.service.RouteService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;

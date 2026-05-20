@@ -1,7 +1,7 @@
 package com.yusufgun.busify.service;
 
-import com.yusufgun.busify.dto.BusRequest;
-import com.yusufgun.busify.dto.BusResponse;
+import com.yusufgun.busify.dto.request.BusRequest;
+import com.yusufgun.busify.dto.response.BusResponse;
 import com.yusufgun.busify.entity.Bus;
 import com.yusufgun.busify.entity.Company;
 import com.yusufgun.busify.exception.ResourceAlreadyExistsException;

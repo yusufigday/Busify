@@ -1,6 +1,6 @@
 package com.yusufgun.busify.mapper;
 
-import com.yusufgun.busify.dto.CompanyResponse;
+import com.yusufgun.busify.dto.response.CompanyResponse;
 import com.yusufgun.busify.entity.Company;
 import org.springframework.stereotype.Component;
 

@@ -1,4 +1,4 @@
-package com.yusufgun.busify.dto;
+package com.yusufgun.busify.dto.request;
 
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotBlank;

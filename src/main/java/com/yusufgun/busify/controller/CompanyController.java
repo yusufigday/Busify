@@ -1,7 +1,7 @@
 package com.yusufgun.busify.controller;
 
-import com.yusufgun.busify.dto.CompanyRequest;
-import com.yusufgun.busify.dto.CompanyResponse;
+import com.yusufgun.busify.dto.request.CompanyRequest;
+import com.yusufgun.busify.dto.response.CompanyResponse;
 import com.yusufgun.busify.service.CompanyService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;

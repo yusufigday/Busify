@@ -1,4 +1,4 @@
-package com.yusufgun.busify.dto;
+package com.yusufgun.busify.dto.response;
 
 import lombok.Data;
 

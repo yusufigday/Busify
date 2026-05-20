@@ -1,7 +1,7 @@
 package com.yusufgun.busify.service;
 
-import com.yusufgun.busify.dto.CompanyRequest;
-import com.yusufgun.busify.dto.CompanyResponse;
+import com.yusufgun.busify.dto.request.CompanyRequest;
+import com.yusufgun.busify.dto.response.CompanyResponse;
 import com.yusufgun.busify.entity.Company;
 import com.yusufgun.busify.exception.ResourceAlreadyExistsException;
 import com.yusufgun.busify.mapper.CompanyMapper;

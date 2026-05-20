@@ -1,7 +1,6 @@
-package com.yusufgun.busify.dto;
+package com.yusufgun.busify.dto.response;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
-import jakarta.validation.constraints.NotNull;
 import lombok.Data;
 
 import java.time.LocalDate;

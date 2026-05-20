@@ -1,7 +1,7 @@
 package com.yusufgun.busify.service;
 
-import com.yusufgun.busify.dto.RouteRequest;
-import com.yusufgun.busify.dto.RouteResponse;
+import com.yusufgun.busify.dto.request.RouteRequest;
+import com.yusufgun.busify.dto.response.RouteResponse;
 import com.yusufgun.busify.entity.Bus;
 import com.yusufgun.busify.entity.Route;
 import com.yusufgun.busify.exception.ResourceNotFoundException;
