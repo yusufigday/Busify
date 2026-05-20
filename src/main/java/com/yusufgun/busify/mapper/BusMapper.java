@@ -2,24 +2,12 @@ package com.yusufgun.busify.mapper;
 
 import com.yusufgun.busify.dto.response.BusResponse;
 import com.yusufgun.busify.entity.Bus;
-import org.springframework.stereotype.Component;
+import org.mapstruct.Mapper;
+import org.mapstruct.Mapping;
 
-@Component
-public class BusMapper {
+@Mapper(componentModel = "spring")
+public interface BusMapper {
 
-    public BusResponse toBusResponse(Bus bus){
-        if (bus == null){
-            return null;
-        }
-        BusResponse busResponse = new BusResponse();
-        busResponse.setId(bus.getId());
-        busResponse.setPlate(bus.getPlate());
-        busResponse.setCapacity(bus.getCapacity());
-
-        if (bus.getCompany() != null){
-            busResponse.setCompanyName(bus.getCompany().getName());
-        }
-
-        return busResponse;
-    }
+    @Mapping(source = "company.id", target = "companyId")
+    BusResponse toBusResponse(Bus bus);
 }

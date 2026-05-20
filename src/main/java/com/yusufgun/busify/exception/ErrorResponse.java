@@ -1,17 +1,10 @@
 package com.yusufgun.busify.exception;
 
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.NoArgsConstructor;
-
 import java.time.LocalDateTime;
 
-@Data
-@NoArgsConstructor
-@AllArgsConstructor
-public class ErrorResponse {
-    private LocalDateTime timestamp;
-    private int status;
-    private String error;
-    private String message;
-}
+public record ErrorResponse(
+        LocalDateTime timestamp,
+        int status,
+        String error,
+        String message
+) {}

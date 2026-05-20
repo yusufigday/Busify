@@ -24,51 +24,45 @@ public class RouteService {
     private final BusRepository busRepository;
 
     public List<RouteResponse> searchRoutes(String origin, String destination, LocalDate date) {
-
-        List<Route> routes = routeRepository.findByOriginAndDestinationAndDepartureDate(origin, destination, date);
-
-        return routes.stream().map(routeMapper::toRouteResponse).collect(Collectors.toList());
-
+        // Ara değişken kullanmadan direkt stream ile döndük
+        return routeRepository.findByOriginAndDestinationAndDepartureDate(origin, destination, date)
+                .stream()
+                .map(routeMapper::toRouteResponse)
+                .collect(Collectors.toList());
     }
 
     public List<RouteResponse> getAllRoutes() {
-        List<Route> routes = routeRepository.findAll();
-
-        return routes.stream()
+        return routeRepository.findAll().stream()
                 .map(routeMapper::toRouteResponse)
                 .collect(Collectors.toList());
-
     }
 
     public RouteResponse createRoute(RouteRequest request) {
-
-        Bus bus = busRepository.findById(request.getBusId())
-                .orElseThrow(() -> new ResourceNotFoundException("Bus not found with id: " + request.getBusId()));
+        Bus bus = busRepository.findById(request.busId())
+                .orElseThrow(() -> new ResourceNotFoundException("Bus not found with id: " + request.busId()));
 
         Route route = new Route();
-        route.setOrigin(request.getOrigin());
-        route.setDestination(request.getDestination());
-        route.setDepartureDate(request.getDepartureDate());
-        route.setDepartureTime(request.getDepartureTime());
-        route.setPrice(request.getPrice());
-
+        route.setOrigin(request.origin());
+        route.setDestination(request.destination());
+        route.setDepartureDate(request.departureDate());
+        route.setDepartureTime(request.departureTime());
+        route.setPrice(request.price());
         route.setBus(bus);
 
         Route savedRoute = routeRepository.save(route);
-
         return routeMapper.toRouteResponse(savedRoute);
     }
-
 
     public RouteResponse updateRoute(Long routeId, RouteRequest updatedRoute) {
         Route route = routeRepository.findById(routeId)
                 .orElseThrow(() -> new ResourceNotFoundException("Route not found with id: " + routeId));
 
-        route.setOrigin(updatedRoute.getOrigin());
-        route.setDestination(updatedRoute.getDestination());
-        route.setDepartureDate(updatedRoute.getDepartureDate());
-        route.setDepartureTime(updatedRoute.getDepartureTime());
-        route.setPrice(updatedRoute.getPrice());
+        route.setOrigin(updatedRoute.origin());
+        route.setDestination(updatedRoute.destination());
+        route.setDepartureDate(updatedRoute.departureDate());
+        route.setDepartureTime(updatedRoute.departureTime());
+        route.setPrice(updatedRoute.price());
+
 
         return routeMapper.toRouteResponse(routeRepository.save(route));
     }

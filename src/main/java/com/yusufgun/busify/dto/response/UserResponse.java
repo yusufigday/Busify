@@ -1,11 +1,8 @@
 package com.yusufgun.busify.dto.response;
 
-import lombok.Data;
-
-@Data
-public class UserResponse {
-    private Long id;
-    private String firstName;
-    private String lastName;
-    private String email;
-}
+public record UserResponse(
+        Long id,
+        String firstName,
+        String lastName,
+        String email
+) {}

@@ -21,35 +21,29 @@ public class UserService {
     private final UserMapper userMapper;
 
     public List<UserResponse> getAllUsers() {
-        List<User> users = userRepository.findAll();
-
-        return users.stream()
+        return userRepository.findAll().stream()
                 .map(userMapper::toUserResponse)
                 .collect(Collectors.toList());
     }
 
     public UserResponse register(RegisterRequest request) {
-
-        if (userRepository.existsByEmail(request.getEmail())) {
+        if (userRepository.existsByEmail(request.email())) {
             throw new ResourceAlreadyExistsException("Email already exists");
         }
-
-        if (userRepository.existsByTcNo(request.getTcNo())) {
+        if (userRepository.existsByTcNo(request.tcNo())) {
             throw new ResourceAlreadyExistsException("TC No already exists");
         }
 
         User user = new User();
-        user.setFirstName(request.getFirstName());
-        user.setLastName(request.getLastName());
-        user.setEmail(request.getEmail());
-        user.setPassword(request.getPassword());
-        user.setTcNo(request.getTcNo());
+        user.setFirstName(request.firstName());
+        user.setLastName(request.lastName());
+        user.setEmail(request.email());
+        user.setPassword(request.password());
+        user.setTcNo(request.tcNo());
 
         User savedUser = userRepository.save(user);
-
         return userMapper.toUserResponse(savedUser);
     }
-
 
     public UserResponse getUser(String tcNo) {
         User user = userRepository.findByTcNo(tcNo)
@@ -62,17 +56,16 @@ public class UserService {
         User user = userRepository.findByTcNo(tcNo)
                 .orElseThrow(() -> new ResourceNotFoundException("User not found with this TC No: " + tcNo));
 
-        if (!user.getEmail().equals(updatedUser.getEmail()) && userRepository.existsByEmail(updatedUser.getEmail())) {
-           throw new ResourceAlreadyExistsException("Email already exists");
+        if (!user.getEmail().equals(updatedUser.email()) && userRepository.existsByEmail(updatedUser.email())) {
+            throw new ResourceAlreadyExistsException("Email already exists");
         }
 
-        user.setFirstName(updatedUser.getFirstName());
-        user.setLastName(updatedUser.getLastName());
-        user.setEmail(updatedUser.getEmail());
-        user.setPassword(updatedUser.getPassword());
+        user.setFirstName(updatedUser.firstName());
+        user.setLastName(updatedUser.lastName());
+        user.setEmail(updatedUser.email());
+        user.setPassword(updatedUser.password());
 
         return userMapper.toUserResponse(userRepository.save(user));
-
     }
 
     public void deleteUser(String tcNo) {

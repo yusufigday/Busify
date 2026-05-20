@@ -27,4 +27,9 @@ public class TicketController {
     public ResponseEntity<List<SeatInfoResponse>> getSeatMap(@PathVariable Long routeId){
         return ResponseEntity.ok(ticketService.getSeatMap(routeId));
     }
+
+    @GetMapping("/user/{tcNo}")
+    public ResponseEntity<List<TicketResponse>> getUserTickets(@PathVariable String tcNo){
+        return ResponseEntity.ok(ticketService.getUserTickets(tcNo));
+    }
 }
