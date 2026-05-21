@@ -1,6 +1,7 @@
 package com.yusufgun.busify.controller;
 
 import com.yusufgun.busify.dto.request.RegisterRequest;
+import com.yusufgun.busify.dto.request.UserUpdateRequest;
 import com.yusufgun.busify.dto.response.UserResponse;
 import com.yusufgun.busify.service.UserService;
 import jakarta.validation.Valid;
@@ -33,7 +34,7 @@ public class UserController {
     }
 
     @PutMapping("/update/{tcNo}")
-    public ResponseEntity<UserResponse> updateUser(@PathVariable String tcNo,@RequestBody RegisterRequest updatedUser) {
+    public ResponseEntity<UserResponse> updateUser(@PathVariable String tcNo,@Valid @RequestBody UserUpdateRequest updatedUser) {
         return ResponseEntity.ok(userService.updateUser(tcNo, updatedUser));
     }
 

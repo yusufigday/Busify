@@ -1,6 +1,7 @@
 package com.yusufgun.busify.service;
 
 import com.yusufgun.busify.dto.request.RouteRequest;
+import com.yusufgun.busify.dto.request.RouteSearchRequest;
 import com.yusufgun.busify.dto.response.RouteResponse;
 import com.yusufgun.busify.entity.Bus;
 import com.yusufgun.busify.entity.Route;
@@ -11,7 +12,6 @@ import com.yusufgun.busify.repository.RouteRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
-import java.time.LocalDate;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -23,10 +23,15 @@ public class RouteService {
     private final RouteMapper routeMapper;
     private final BusRepository busRepository;
 
-    public List<RouteResponse> searchRoutes(String origin, String destination, LocalDate date) {
-        // Ara değişken kullanmadan direkt stream ile döndük
-        return routeRepository.findByOriginAndDestinationAndDepartureDate(origin, destination, date)
-                .stream()
+    public List<RouteResponse> searchRoutes(RouteSearchRequest searchRequest) {
+        String cleanOrigin = searchRequest.origin().trim().toUpperCase();
+        String cleanDestination = searchRequest.destination().trim().toUpperCase();
+
+        return routeRepository.findByOriginAndDestinationAndDepartureDate(
+                        cleanOrigin,
+                        cleanDestination,
+                        searchRequest.date()
+                ).stream()
                 .map(routeMapper::toRouteResponse)
                 .collect(Collectors.toList());
     }
@@ -42,8 +47,8 @@ public class RouteService {
                 .orElseThrow(() -> new ResourceNotFoundException("Bus not found with id: " + request.busId()));
 
         Route route = new Route();
-        route.setOrigin(request.origin());
-        route.setDestination(request.destination());
+        route.setOrigin(request.origin().trim().toUpperCase());
+        route.setDestination(request.destination().trim().toUpperCase());
         route.setDepartureDate(request.departureDate());
         route.setDepartureTime(request.departureTime());
         route.setPrice(request.price());
@@ -57,12 +62,11 @@ public class RouteService {
         Route route = routeRepository.findById(routeId)
                 .orElseThrow(() -> new ResourceNotFoundException("Route not found with id: " + routeId));
 
-        route.setOrigin(updatedRoute.origin());
-        route.setDestination(updatedRoute.destination());
+        route.setOrigin(updatedRoute.origin().trim().toUpperCase());
+        route.setDestination(updatedRoute.destination().trim().toUpperCase());
         route.setDepartureDate(updatedRoute.departureDate());
         route.setDepartureTime(updatedRoute.departureTime());
         route.setPrice(updatedRoute.price());
-
 
         return routeMapper.toRouteResponse(routeRepository.save(route));
     }

@@ -1,6 +1,7 @@
 package com.yusufgun.busify.controller;
 
 import com.yusufgun.busify.dto.request.RouteRequest;
+import com.yusufgun.busify.dto.request.RouteSearchRequest;
 import com.yusufgun.busify.dto.response.RouteResponse;
 import com.yusufgun.busify.service.RouteService;
 import lombok.RequiredArgsConstructor;
@@ -23,12 +24,8 @@ public class RouteController {
     }
 
     @GetMapping("/search")
-    public ResponseEntity<List<RouteResponse>> searchRoutes(
-            @RequestParam String origin,
-            @RequestParam String destination,
-            @RequestParam LocalDate date
-    ) {
-        return ResponseEntity.ok(routeService.searchRoutes(origin, destination, date));
+    public ResponseEntity<List<RouteResponse>> searchRoutes(@ModelAttribute RouteSearchRequest searchRequest){
+        return ResponseEntity.ok(routeService.searchRoutes(searchRequest));
     }
 
     @PostMapping("/add")

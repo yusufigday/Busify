@@ -23,16 +23,18 @@ public class BusService {
     private final CompanyRepository companyRepository;
     private final BusMapper busMapper;
 
-    public BusResponse createBus(BusRequest busRequest){
-        if (busRepository.existsByPlate(busRequest.plate())){
-            throw new ResourceAlreadyExistsException("Bus with plate '" + busRequest.plate() + "' already exists");
+    public BusResponse createBus(BusRequest busRequest) {
+        String cleanPlate = busRequest.plate().trim().toUpperCase();
+
+        if (busRepository.existsByPlate(cleanPlate)) {
+            throw new ResourceAlreadyExistsException("Bus with plate '" + cleanPlate + "' already exists");
         }
 
         Company company = companyRepository.findById(busRequest.companyId())
                 .orElseThrow(() -> new ResourceNotFoundException("Company not found with id: " + busRequest.companyId()));
 
         Bus bus = new Bus();
-        bus.setPlate(busRequest.plate());
+        bus.setPlate(cleanPlate);
         bus.setCapacity(busRequest.capacity());
         bus.setCompany(company);
 
@@ -40,9 +42,44 @@ public class BusService {
         return busMapper.toBusResponse(savedBus);
     }
 
-    public List<BusResponse> getAllBuses(){
+    public List<BusResponse> getAllBuses() {
         return busRepository.findAll().stream()
                 .map(busMapper::toBusResponse)
                 .collect(Collectors.toList());
+    }
+
+    public BusResponse getBus(Long busId) {
+        Bus bus = busRepository.findById(busId)
+                .orElseThrow(() -> new ResourceNotFoundException("Bus with id: " + busId + " not found"));
+
+        return busMapper.toBusResponse(bus);
+    }
+
+    public BusResponse updateBus(Long busId, BusRequest updatedRequest) {
+        Bus bus = busRepository.findById(busId)
+                .orElseThrow(() -> new ResourceNotFoundException("Bus with id: " + busId + " not found"));
+
+        String requestedPlate = updatedRequest.plate().trim().toUpperCase();
+        String currentPlate = bus.getPlate().trim().toUpperCase();
+
+        if (!currentPlate.equals(requestedPlate) && busRepository.existsByPlate(requestedPlate)) {
+            throw new ResourceAlreadyExistsException("Bus with plate '" + requestedPlate + "' already exists");
+        }
+
+        Company company = companyRepository.findById(updatedRequest.companyId())
+                .orElseThrow(() -> new ResourceNotFoundException("Company not found with id: " + updatedRequest.companyId()));
+
+        bus.setPlate(requestedPlate);
+        bus.setCapacity(updatedRequest.capacity());
+        bus.setCompany(company);
+
+        return busMapper.toBusResponse(busRepository.save(bus));
+    }
+
+    public void deleteBus(Long busId) {
+        Bus bus = busRepository.findById(busId)
+                .orElseThrow(() -> new ResourceNotFoundException("Bus with id: " + busId + " not found"));
+
+        busRepository.delete(bus);
     }
 }

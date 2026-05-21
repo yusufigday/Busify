@@ -1,11 +1,13 @@
 package com.yusufgun.busify.service;
 
 import com.yusufgun.busify.dto.request.RegisterRequest;
+import com.yusufgun.busify.dto.request.UserUpdateRequest;
 import com.yusufgun.busify.dto.response.UserResponse;
 import com.yusufgun.busify.entity.User;
 import com.yusufgun.busify.exception.ResourceAlreadyExistsException;
 import com.yusufgun.busify.exception.ResourceNotFoundException;
 import com.yusufgun.busify.mapper.UserMapper;
+import com.yusufgun.busify.repository.TicketRepository;
 import com.yusufgun.busify.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -19,6 +21,7 @@ public class UserService {
 
     private final UserRepository userRepository;
     private final UserMapper userMapper;
+    private final TicketRepository ticketRepository;
 
     public List<UserResponse> getAllUsers() {
         return userRepository.findAll().stream()
@@ -27,50 +30,63 @@ public class UserService {
     }
 
     public UserResponse register(RegisterRequest request) {
-        if (userRepository.existsByEmail(request.email())) {
+        String cleanEmail = request.email().trim().toLowerCase();
+        String cleanTcNo = request.tcNo().trim();
+
+        if (userRepository.existsByEmail(cleanEmail)) {
             throw new ResourceAlreadyExistsException("Email already exists");
         }
-        if (userRepository.existsByTcNo(request.tcNo())) {
+        if (userRepository.existsByTcNo(cleanTcNo)) {
             throw new ResourceAlreadyExistsException("TC No already exists");
         }
 
         User user = new User();
-        user.setFirstName(request.firstName());
-        user.setLastName(request.lastName());
-        user.setEmail(request.email());
+        user.setFirstName(request.firstName().trim());
+        user.setLastName(request.lastName().trim());
+        user.setEmail(cleanEmail);
         user.setPassword(request.password());
-        user.setTcNo(request.tcNo());
+        user.setTcNo(cleanTcNo);
 
         User savedUser = userRepository.save(user);
         return userMapper.toUserResponse(savedUser);
     }
 
     public UserResponse getUser(String tcNo) {
-        User user = userRepository.findByTcNo(tcNo)
-                .orElseThrow(() -> new ResourceNotFoundException("User not found with this TC No: " + tcNo));
+        String cleanTcNo = tcNo.trim();
+        User user = userRepository.findByTcNo(cleanTcNo)
+                .orElseThrow(() -> new ResourceNotFoundException("User not found with this TC No: " + cleanTcNo));
 
         return userMapper.toUserResponse(user);
     }
 
-    public UserResponse updateUser(String tcNo, RegisterRequest updatedUser) {
-        User user = userRepository.findByTcNo(tcNo)
-                .orElseThrow(() -> new ResourceNotFoundException("User not found with this TC No: " + tcNo));
+    public UserResponse updateUser(String tcNo, UserUpdateRequest updatedUser) {
+        String cleanTcNo = tcNo.trim();
+        User user = userRepository.findByTcNo(cleanTcNo)
+                .orElseThrow(() -> new ResourceNotFoundException("User not found with this TC No: " + cleanTcNo));
 
-        if (!user.getEmail().equals(updatedUser.email()) && userRepository.existsByEmail(updatedUser.email())) {
+        String requestedEmail = updatedUser.email().trim().toLowerCase();
+        String currentEmail = user.getEmail().trim().toLowerCase();
+
+        if (!currentEmail.equals(requestedEmail) && userRepository.existsByEmail(requestedEmail)) {
             throw new ResourceAlreadyExistsException("Email already exists");
         }
 
-        user.setFirstName(updatedUser.firstName());
-        user.setLastName(updatedUser.lastName());
-        user.setEmail(updatedUser.email());
+        user.setFirstName(updatedUser.firstName().trim());
+        user.setLastName(updatedUser.lastName().trim());
+        user.setEmail(requestedEmail);
         user.setPassword(updatedUser.password());
 
         return userMapper.toUserResponse(userRepository.save(user));
     }
 
     public void deleteUser(String tcNo) {
-        User user = userRepository.findByTcNo(tcNo)
-                .orElseThrow(() -> new ResourceNotFoundException("User not found with this TC No: " + tcNo));
+        String cleanTcNo = tcNo.trim();
+        User user = userRepository.findByTcNo(cleanTcNo)
+                .orElseThrow(() -> new ResourceNotFoundException("User not found with this TC No: " + cleanTcNo));
+
+        if (ticketRepository.existsByUserTcNo(cleanTcNo)) {
+            throw new IllegalStateException("Cannot delete user! This user has purchased tickets. Cancel the tickets first.");
+        }
 
         userRepository.delete(user);
     }

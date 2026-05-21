@@ -17,15 +17,29 @@ public class BusController {
 
     private final BusService busService;
 
-    @PostMapping("/create")
-    public ResponseEntity<BusResponse> createBus(@Valid @RequestBody BusRequest busRequest){
-        return ResponseEntity.ok(busService.createBus(busRequest));
-    }
-
     @GetMapping("/allBuses")
     public ResponseEntity<List<BusResponse>> allBuses(){
         return ResponseEntity.ok(busService.getAllBuses());
     }
 
+    @GetMapping("/{busId}")
+    public ResponseEntity<BusResponse> getBusById(@PathVariable Long busId){
+        return ResponseEntity.ok(busService.getBus(busId));
+    }
 
+    @PostMapping("/create")
+    public ResponseEntity<BusResponse> createBus(@Valid @RequestBody BusRequest busRequest){
+        return ResponseEntity.ok(busService.createBus(busRequest));
+    }
+
+    @PutMapping("/update/{busId}")
+    public ResponseEntity<BusResponse> updateBus(@PathVariable Long busId, @Valid @RequestBody BusRequest updatedRequest){
+        return ResponseEntity.ok(busService.updateBus(busId, updatedRequest));
+    }
+
+    @DeleteMapping("/delete/{busId}")
+    public ResponseEntity<Void> deleteBus(@PathVariable Long busId){
+        busService.deleteBus(busId);
+        return ResponseEntity.noContent().build();
+    }
 }

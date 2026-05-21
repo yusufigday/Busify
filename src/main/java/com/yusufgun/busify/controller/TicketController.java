@@ -7,6 +7,7 @@ import com.yusufgun.busify.service.TicketService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
+import org.springframework.stereotype.Repository;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -23,13 +24,24 @@ public class TicketController {
         return ResponseEntity.ok(ticketService.buyTicket(ticketRequest));
     }
 
-    @GetMapping("/seat-map/{routeId}")
-    public ResponseEntity<List<SeatInfoResponse>> getSeatMap(@PathVariable Long routeId){
-        return ResponseEntity.ok(ticketService.getSeatMap(routeId));
+    @GetMapping("/{id}")
+    public ResponseEntity<TicketResponse> getTicketById(@PathVariable Long id){
+        return ResponseEntity.ok(ticketService.getTicketById(id));
     }
 
     @GetMapping("/user/{tcNo}")
     public ResponseEntity<List<TicketResponse>> getUserTickets(@PathVariable String tcNo){
         return ResponseEntity.ok(ticketService.getUserTickets(tcNo));
+    }
+
+    @GetMapping("/route/{routeId}/seats")
+    public ResponseEntity<List<SeatInfoResponse>> getSeatMap(@PathVariable Long routeId){
+        return ResponseEntity.ok(ticketService.getSeatMap(routeId));
+    }
+
+    @DeleteMapping("/cancel/{id}")
+    public ResponseEntity<Void> cancelTicket(@PathVariable Long id){
+        ticketService.cancelTicket(id);
+        return ResponseEntity.noContent().build();
     }
 }

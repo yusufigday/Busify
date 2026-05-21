@@ -28,12 +28,13 @@ public class TicketService {
     private final TicketMapper ticketMapper;
 
     public TicketResponse buyTicket(TicketRequest ticketRequest) {
+        String cleanTcNo = ticketRequest.tcNo().trim();
 
         Route route = routeRepository.findById(ticketRequest.routeId())
                 .orElseThrow(() -> new ResourceNotFoundException("Route not found with id: " + ticketRequest.routeId()));
 
-        User user = userRepository.findByTcNo(ticketRequest.tcNo())
-                .orElseThrow(() -> new ResourceNotFoundException("User not found with id: " + ticketRequest.tcNo()));
+        User user = userRepository.findByTcNo(cleanTcNo)
+                .orElseThrow(() -> new ResourceNotFoundException("User not found with id: " + cleanTcNo));
 
         if (ticketRequest.seatNumber() > route.getBus().getCapacity()) {
             throw new IllegalArgumentException("Seat number cannot exceed bus capacity");
@@ -59,21 +60,35 @@ public class TicketService {
         return ticketMapper.toTicketResponse(savedTicket);
     }
 
+    public TicketResponse getTicketById(Long id) {
+        Ticket ticket = ticketRepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("Ticket not found with id: " + id));
+
+        return ticketMapper.toTicketResponse(ticket);
+    }
+
     public List<SeatInfoResponse> getSeatMap(Long routeId) {
-        List<Ticket> tickets = ticketRepository.findByRouteId(routeId);
-        return tickets.stream()
+        return ticketRepository.findByRouteId(routeId).stream()
                 .map(ticket -> new SeatInfoResponse(ticket.getSeatNumber(), ticket.getGender()))
                 .collect(Collectors.toList());
     }
 
     public List<TicketResponse> getUserTickets(String userTcNo) {
-        if (!userRepository.existsByTcNo(userTcNo)) {
-            throw new ResourceNotFoundException("User not found with tcNo: " + userTcNo);
+        String cleanTcNo = userTcNo.trim();
+
+        if (!userRepository.existsByTcNo(cleanTcNo)) {
+            throw new ResourceNotFoundException("User not found with tcNo: " + cleanTcNo);
         }
 
-        List<Ticket> tickets = ticketRepository.findByUserTcNo(userTcNo);
-
-        return tickets.stream().map(ticketMapper::toTicketResponse)
+        return ticketRepository.findByUserTcNo(cleanTcNo).stream()
+                .map(ticketMapper::toTicketResponse)
                 .collect(Collectors.toList());
+    }
+
+    public void cancelTicket(Long id) {
+        Ticket ticket = ticketRepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("Ticket not found with id: " + id));
+
+        ticketRepository.delete(ticket);
     }
 }
