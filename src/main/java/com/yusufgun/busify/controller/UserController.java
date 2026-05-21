@@ -28,10 +28,6 @@ public class UserController {
         return ResponseEntity.ok(userService.getUser(tcNo));
     }
 
-    @PostMapping("/register")
-    public ResponseEntity<UserResponse> register(@Valid @RequestBody RegisterRequest request) {
-        return ResponseEntity.ok(userService.register(request));
-    }
 
     @PutMapping("/update/{tcNo}")
     public ResponseEntity<UserResponse> updateUser(@PathVariable String tcNo,@Valid @RequestBody UserUpdateRequest updatedUser) {

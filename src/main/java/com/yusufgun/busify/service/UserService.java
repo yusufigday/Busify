@@ -1,6 +1,5 @@
 package com.yusufgun.busify.service;
 
-import com.yusufgun.busify.dto.request.RegisterRequest;
 import com.yusufgun.busify.dto.request.UserUpdateRequest;
 import com.yusufgun.busify.dto.response.UserResponse;
 import com.yusufgun.busify.entity.User;
@@ -27,28 +26,6 @@ public class UserService {
         return userRepository.findAll().stream()
                 .map(userMapper::toUserResponse)
                 .collect(Collectors.toList());
-    }
-
-    public UserResponse register(RegisterRequest request) {
-        String cleanEmail = request.email().trim().toLowerCase();
-        String cleanTcNo = request.tcNo().trim();
-
-        if (userRepository.existsByEmail(cleanEmail)) {
-            throw new ResourceAlreadyExistsException("Email already exists");
-        }
-        if (userRepository.existsByTcNo(cleanTcNo)) {
-            throw new ResourceAlreadyExistsException("TC No already exists");
-        }
-
-        User user = new User();
-        user.setFirstName(request.firstName().trim());
-        user.setLastName(request.lastName().trim());
-        user.setEmail(cleanEmail);
-        user.setPassword(request.password());
-        user.setTcNo(cleanTcNo);
-
-        User savedUser = userRepository.save(user);
-        return userMapper.toUserResponse(savedUser);
     }
 
     public UserResponse getUser(String tcNo) {
