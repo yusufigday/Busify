@@ -6,6 +6,7 @@ import com.yusufgun.busify.service.BusService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -28,16 +29,19 @@ public class BusController {
     }
 
     @PostMapping("/create")
+    @PreAuthorize("hasAnyRole('ADMIN', 'STAFF')")
     public ResponseEntity<BusResponse> createBus(@Valid @RequestBody BusRequest busRequest){
         return ResponseEntity.ok(busService.createBus(busRequest));
     }
 
     @PutMapping("/update/{busId}")
+    @PreAuthorize("hasAnyRole('ADMIN', 'STAFF')")
     public ResponseEntity<BusResponse> updateBus(@PathVariable Long busId, @Valid @RequestBody BusRequest updatedRequest){
         return ResponseEntity.ok(busService.updateBus(busId, updatedRequest));
     }
 
     @DeleteMapping("/delete/{busId}")
+    @PreAuthorize("hasAnyRole('ADMIN', 'STAFF')")
     public ResponseEntity<Void> deleteBus(@PathVariable Long busId){
         busService.deleteBus(busId);
         return ResponseEntity.noContent().build();

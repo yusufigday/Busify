@@ -6,12 +6,14 @@ import com.yusufgun.busify.service.CompanyService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
 @RestController
 @RequestMapping("/api/companies")
+@PreAuthorize("hasRole('ADMIN')")
 @RequiredArgsConstructor
 public class CompanyController {
 

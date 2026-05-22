@@ -3,6 +3,7 @@ package com.yusufgun.busify.service;
 import com.yusufgun.busify.dto.request.UserUpdateRequest;
 import com.yusufgun.busify.dto.response.UserResponse;
 import com.yusufgun.busify.entity.User;
+import com.yusufgun.busify.enums.Role;
 import com.yusufgun.busify.exception.ResourceAlreadyExistsException;
 import com.yusufgun.busify.exception.ResourceNotFoundException;
 import com.yusufgun.busify.mapper.UserMapper;
@@ -66,5 +67,17 @@ public class UserService {
         }
 
         userRepository.delete(user);
+    }
+
+    public String updateUserRole(String email, Role newRole){
+
+        User user = userRepository.findByEmail(email)
+                .orElseThrow(() -> new ResourceNotFoundException("User not found with this email: " + email));
+
+        user.setRole(newRole);
+
+        userRepository.save(user);
+
+        return "Role of user " + user.getFirstName() + " " + user.getLastName() + " has been successfully to: " + newRole.name();
     }
 }

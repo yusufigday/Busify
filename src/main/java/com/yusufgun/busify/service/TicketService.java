@@ -6,6 +6,7 @@ import com.yusufgun.busify.dto.response.TicketResponse;
 import com.yusufgun.busify.entity.Route;
 import com.yusufgun.busify.entity.Ticket;
 import com.yusufgun.busify.entity.User;
+import com.yusufgun.busify.enums.Role;
 import com.yusufgun.busify.exception.ResourceAlreadyExistsException;
 import com.yusufgun.busify.exception.ResourceNotFoundException;
 import com.yusufgun.busify.mapper.TicketMapper;
@@ -13,6 +14,7 @@ import com.yusufgun.busify.repository.RouteRepository;
 import com.yusufgun.busify.repository.TicketRepository;
 import com.yusufgun.busify.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -64,6 +66,15 @@ public class TicketService {
         Ticket ticket = ticketRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Ticket not found with id: " + id));
 
+        User currentUser = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+
+        boolean isOwner = ticket.getUser().getTcNo().equals(currentUser.getTcNo());
+        boolean isAuthorizedStaff = currentUser.getRole() == Role.ADMIN || currentUser.getRole() == Role.STAFF;
+
+        if (!isOwner && !isAuthorizedStaff) {
+            throw new RuntimeException("Security Breach: You are not authorized to view this ticket!");
+        }
+
         return ticketMapper.toTicketResponse(ticket);
     }
 
@@ -88,6 +99,15 @@ public class TicketService {
     public void cancelTicket(Long id) {
         Ticket ticket = ticketRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Ticket not found with id: " + id));
+
+        User currentUser = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+
+        boolean isOwner = ticket.getUser().getTcNo().equals(currentUser.getTcNo());
+        boolean isAuthorizedStaff = currentUser.getRole() == Role.ADMIN || currentUser.getRole() == Role.STAFF;
+
+        if (!isOwner && !isAuthorizedStaff) {
+            throw new RuntimeException("Security Breach: You are not authorized to cancel this ticket!");
+        }
 
         ticketRepository.delete(ticket);
     }
