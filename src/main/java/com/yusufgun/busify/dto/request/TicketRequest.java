@@ -9,9 +9,6 @@ public record TicketRequest(
         @NotNull(message = "Route ID cannot be null")
         Long routeId,
 
-        @NotBlank(message = "TC No cannot be blank")
-        String tcNo,
-
         @Min(value = 1, message = "Seat number must be at least 1")
         int seatNumber,
 

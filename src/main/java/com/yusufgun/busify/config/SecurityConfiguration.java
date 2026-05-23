@@ -28,11 +28,13 @@ public class SecurityConfiguration {
         http
                 .csrf(csrf -> csrf.disable())
                 .authorizeHttpRequests(auth -> auth
+                        .requestMatchers("/v3/api-docs/**", "/swagger-ui/**", "/swagger-ui.html").permitAll()
                         .requestMatchers("/api/auth/**").permitAll()
                         .requestMatchers(HttpMethod.GET, "/api/buses/**").permitAll()
                         .requestMatchers(HttpMethod.GET, "/api/routes/**").permitAll()
 
-                        // 2. Geri kalan TÜM isteklere giriş yapılmış olması şartı koy
+
+
                         .anyRequest().authenticated()
                 )
                 .sessionManagement(sess -> sess.sessionCreationPolicy(SessionCreationPolicy.STATELESS))

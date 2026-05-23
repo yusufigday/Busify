@@ -30,13 +30,10 @@ public class TicketService {
     private final TicketMapper ticketMapper;
 
     public TicketResponse buyTicket(TicketRequest ticketRequest) {
-        String cleanTcNo = ticketRequest.tcNo().trim();
+        User currentUser = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
 
         Route route = routeRepository.findById(ticketRequest.routeId())
                 .orElseThrow(() -> new ResourceNotFoundException("Route not found with id: " + ticketRequest.routeId()));
-
-        User user = userRepository.findByTcNo(cleanTcNo)
-                .orElseThrow(() -> new ResourceNotFoundException("User not found with id: " + cleanTcNo));
 
         if (ticketRequest.seatNumber() > route.getBus().getCapacity()) {
             throw new IllegalArgumentException("Seat number cannot exceed bus capacity");
@@ -53,7 +50,7 @@ public class TicketService {
 
         Ticket ticket = new Ticket();
         ticket.setRoute(route);
-        ticket.setUser(user);
+        ticket.setUser(currentUser);
         ticket.setSeatNumber(ticketRequest.seatNumber());
         ticket.setGender(ticketRequest.gender());
 

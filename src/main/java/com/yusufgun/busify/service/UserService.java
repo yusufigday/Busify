@@ -10,6 +10,7 @@ import com.yusufgun.busify.mapper.UserMapper;
 import com.yusufgun.busify.repository.TicketRepository;
 import com.yusufgun.busify.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -22,6 +23,7 @@ public class UserService {
     private final UserRepository userRepository;
     private final UserMapper userMapper;
     private final TicketRepository ticketRepository;
+    private final PasswordEncoder passwordEncoder;
 
     public List<UserResponse> getAllUsers() {
         return userRepository.findAll().stream()
@@ -52,7 +54,7 @@ public class UserService {
         user.setFirstName(updatedUser.firstName().trim());
         user.setLastName(updatedUser.lastName().trim());
         user.setEmail(requestedEmail);
-        user.setPassword(updatedUser.password());
+        user.setPassword(passwordEncoder.encode(updatedUser.password()));
 
         return userMapper.toUserResponse(userRepository.save(user));
     }
