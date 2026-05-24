@@ -23,6 +23,13 @@ public class AuthenticationService {
     private final AuthenticationManager authenticationManager;
 
     public AuthenticationResponse register(RegisterRequest request) {
+        if (repository.existsByEmail(request.email())) {
+            throw new IllegalArgumentException("Error: Email is already in use!");
+        }
+        if (repository.existsByTcNo(request.tcNo())) {
+            throw new IllegalArgumentException("Error: TC No is already in use!");
+        }
+
         var user = new User();
         user.setFirstName(request.firstName());
         user.setLastName(request.lastName());
@@ -34,9 +41,8 @@ public class AuthenticationService {
         repository.save(user);
 
         var jwtToken = jwtService.generateToken(user);
-        return AuthenticationResponse.builder()
-                .token(jwtToken)
-                .build();
+
+        return new AuthenticationResponse(jwtToken);
     }
 
     public AuthenticationResponse authenticate(AuthenticationRequest request) {
@@ -48,11 +54,10 @@ public class AuthenticationService {
         );
 
         var user = repository.findByEmail(request.email())
-                .orElseThrow();
+                .orElseThrow(() -> new IllegalArgumentException("User not found with this email"));
 
         var jwtToken = jwtService.generateToken(user);
-        return AuthenticationResponse.builder()
-                .token(jwtToken)
-                .build();
+
+        return new AuthenticationResponse(jwtToken);
     }
 }
