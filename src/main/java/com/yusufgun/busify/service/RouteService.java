@@ -24,10 +24,15 @@ public class RouteService {
     private final BusRepository busRepository;
 
     public List<RouteResponse> searchRoutes(RouteSearchRequest searchRequest) {
-        String cleanOrigin = searchRequest.origin().trim().toUpperCase();
-        String cleanDestination = searchRequest.destination().trim().toUpperCase();
+        String cleanOrigin = (searchRequest.origin() != null && !searchRequest.origin().isBlank())
+                ? searchRequest.origin().trim().toUpperCase()
+                : null;
 
-        return routeRepository.findByOriginAndDestinationAndDepartureDate(
+        String cleanDestination = (searchRequest.destination() != null && !searchRequest.destination().isBlank())
+                ? searchRequest.destination().trim().toUpperCase()
+                : null;
+
+        return routeRepository.searchRoutesWithFilters(
                         cleanOrigin,
                         cleanDestination,
                         searchRequest.date()

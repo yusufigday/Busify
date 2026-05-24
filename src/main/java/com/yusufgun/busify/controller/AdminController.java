@@ -1,6 +1,5 @@
 package com.yusufgun.busify.controller;
 
-
 import com.yusufgun.busify.enums.Role;
 import com.yusufgun.busify.service.UserService;
 import lombok.RequiredArgsConstructor;
@@ -15,11 +14,6 @@ import org.springframework.web.bind.annotation.*;
 public class AdminController {
 
     private final UserService userService;
-
-    @GetMapping("/secret-report")
-    public ResponseEntity<String> getSecretReport(){
-        return ResponseEntity.ok("Welcome Boss! All confidential financial and operational reports of the company are here.");
-    }
 
     @PutMapping("/change-role")
     public ResponseEntity<String> changeUserRole(
