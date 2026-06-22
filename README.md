@@ -26,7 +26,7 @@ Busify is a robust backend REST API built with Java and Spring Boot for managing
 * **Swagger (SpringDoc OpenAPI 3)**
 * **MapStruct & Lombok**
 * **Jakarta Bean Validation**
-* **Maven**
+* **Gradle**
 
 ## 🐳 Getting Started (Run with Docker)
 
