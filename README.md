@@ -18,7 +18,7 @@ Busify is a robust backend REST API built with Java and Spring Boot for managing
 ## 🛠️ Technologies & Tools
 
 * **Java 21 (LTS)**
-* **Spring Boot 3.x**
+* **Spring Boot 4.0.6**
 * **Spring Security & JWT (io.jsonwebtoken)**
 * **Spring Data JPA / Hibernate**
 * **PostgreSQL**

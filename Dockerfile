@@ -1,14 +1,18 @@
-FROM maven:3.9.6-eclipse-temurin-21 AS build
+FROM eclipse-temurin:21-jdk AS build
 WORKDIR /app
-COPY pom.xml .
+COPY gradlew .
+COPY gradle ./gradle
+COPY build.gradle .
+COPY settings.gradle .
 COPY src ./src
 
-RUN mvn clean package -DskipTests
+RUN chmod +x gradlew
+RUN ./gradlew bootJar -x test --no-daemon
 
 FROM eclipse-temurin:21-jre
 WORKDIR /app
 
-COPY --from=build /app/target/Busify-0.0.1-SNAPSHOT.jar app.jar
+COPY --from=build /app/build/libs/Busify-0.0.1-SNAPSHOT.jar app.jar
 
 EXPOSE 8080
 
