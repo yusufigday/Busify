@@ -27,6 +27,7 @@ public class UserController {
     }
 
     @GetMapping("/{tcNo}")
+    @PreAuthorize("#tcNo == authentication.principal.tcNo or hasAnyRole('ADMIN', 'STAFF')")
     public ResponseEntity<UserResponse> getUser(@PathVariable String tcNo){
         return ResponseEntity.ok(userService.getUser(tcNo));
     }

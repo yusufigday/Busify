@@ -9,5 +9,6 @@ public record RouteResponse(
         String destination,
         LocalDate departureDate,
         LocalTime departureTime,
-        Double price
+        Double price,
+        Long busId
 ) {}

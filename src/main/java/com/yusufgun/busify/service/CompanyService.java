@@ -58,9 +58,14 @@ public class CompanyService {
         String requestedName = updatedRequest.name().trim().toUpperCase();
         String currentName = company.getName().trim().toUpperCase();
         String cleanContact = updatedRequest.contactNumber().trim();
+        String currentContact = company.getContactNumber().trim();
 
         if (!currentName.equals(requestedName) && companyRepository.existsByName(requestedName)) {
             throw new ResourceAlreadyExistsException("Company with name '" + requestedName + "' already exists");
+        }
+
+        if (!currentContact.equals(cleanContact) && companyRepository.existsByContactNumber(cleanContact)) {
+            throw new ResourceAlreadyExistsException("Company with contact number '" + cleanContact + "' already exists");
         }
 
         company.setName(requestedName);

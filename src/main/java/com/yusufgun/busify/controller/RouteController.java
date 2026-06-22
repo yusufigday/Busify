@@ -4,6 +4,7 @@ import com.yusufgun.busify.dto.request.RouteRequest;
 import com.yusufgun.busify.dto.request.RouteSearchRequest;
 import com.yusufgun.busify.dto.response.RouteResponse;
 import com.yusufgun.busify.service.RouteService;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -30,13 +31,13 @@ public class RouteController {
 
     @PostMapping("/add")
     @PreAuthorize("hasAnyRole('ADMIN', 'STAFF')")
-    public ResponseEntity<RouteResponse> addRoute(@RequestBody RouteRequest request){
+    public ResponseEntity<RouteResponse> addRoute(@Valid @RequestBody RouteRequest request){
         return ResponseEntity.ok(routeService.createRoute(request));
     }
 
     @PutMapping("/update/{routeId}")
     @PreAuthorize("hasAnyRole('ADMIN', 'STAFF')")
-    public ResponseEntity<RouteResponse> updateRoute(@PathVariable Long routeId, @RequestBody RouteRequest updatedRoute){
+    public ResponseEntity<RouteResponse> updateRoute(@PathVariable Long routeId, @Valid @RequestBody RouteRequest updatedRoute){
         return ResponseEntity.ok(routeService.updateRoute(routeId,updatedRoute));
     }
 

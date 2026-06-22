@@ -9,8 +9,9 @@ public record TicketRequest(
         @NotNull(message = "Route ID cannot be null")
         Long routeId,
 
+        @NotNull(message = "Seat number cannot be null")
         @Min(value = 1, message = "Seat number must be at least 1")
-        int seatNumber,
+        Integer seatNumber,
 
         @NotNull(message = "Gender cannot be null")
         Gender gender

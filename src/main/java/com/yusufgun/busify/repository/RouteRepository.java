@@ -22,4 +22,6 @@ public interface RouteRepository extends JpaRepository<Route, Long> {
             @Param("date") LocalDate date
     );
 
+    boolean existsByBusId(Long busId);
+
 }

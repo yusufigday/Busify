@@ -80,6 +80,6 @@ public class UserService {
 
         userRepository.save(user);
 
-        return "Role of user " + user.getFirstName() + " " + user.getLastName() + " has been successfully to: " + newRole.name();
+        return "Role of user " + user.getFirstName() + " " + user.getLastName() + " has been successfully updated to: " + newRole.name();
     }
 }

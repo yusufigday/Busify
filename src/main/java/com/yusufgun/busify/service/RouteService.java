@@ -9,6 +9,7 @@ import com.yusufgun.busify.exception.ResourceNotFoundException;
 import com.yusufgun.busify.mapper.RouteMapper;
 import com.yusufgun.busify.repository.BusRepository;
 import com.yusufgun.busify.repository.RouteRepository;
+import com.yusufgun.busify.repository.TicketRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -22,6 +23,7 @@ public class RouteService {
     private final RouteRepository routeRepository;
     private final RouteMapper routeMapper;
     private final BusRepository busRepository;
+    private final TicketRepository ticketRepository;
 
     public List<RouteResponse> searchRoutes(RouteSearchRequest searchRequest) {
         String cleanOrigin = (searchRequest.origin() != null && !searchRequest.origin().isBlank())
@@ -67,11 +69,15 @@ public class RouteService {
         Route route = routeRepository.findById(routeId)
                 .orElseThrow(() -> new ResourceNotFoundException("Route not found with id: " + routeId));
 
+        Bus bus = busRepository.findById(updatedRoute.busId())
+                .orElseThrow(() -> new ResourceNotFoundException("Bus not found with id: " + updatedRoute.busId()));
+
         route.setOrigin(updatedRoute.origin().trim().toUpperCase());
         route.setDestination(updatedRoute.destination().trim().toUpperCase());
         route.setDepartureDate(updatedRoute.departureDate());
         route.setDepartureTime(updatedRoute.departureTime());
         route.setPrice(updatedRoute.price());
+        route.setBus(bus);
 
         return routeMapper.toRouteResponse(routeRepository.save(route));
     }
@@ -79,6 +85,10 @@ public class RouteService {
     public void deleteRoute(Long routeId) {
         Route route = routeRepository.findById(routeId)
                 .orElseThrow(() -> new ResourceNotFoundException("Route not found with id: " + routeId));
+
+        if (ticketRepository.existsByRouteId(routeId)) {
+            throw new IllegalStateException("Cannot delete route with id '" + routeId + "' because it has associated tickets");
+        }
 
         routeRepository.delete(route);
     }

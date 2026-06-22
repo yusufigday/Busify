@@ -1,6 +1,7 @@
 package com.yusufgun.busify.repository;
 
 import com.yusufgun.busify.entity.User;
+import com.yusufgun.busify.enums.Role;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
@@ -16,4 +17,6 @@ public interface UserRepository extends JpaRepository<User, Long> {
     Optional<User> findByTcNo(String tcNo);
 
     Optional<User> findByEmail(String email);
+
+    boolean existsByRole(Role role);
 }

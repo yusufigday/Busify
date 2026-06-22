@@ -19,8 +19,7 @@ public class DataSeeder implements CommandLineRunner {
     @Override
     public void run(String... args) throws Exception {
 
-        boolean adminExists = userRepository.findAll().stream()
-                .anyMatch(user -> user.getRole() == Role.ADMIN);
+        boolean adminExists = userRepository.existsByRole(Role.ADMIN);
 
         if (!adminExists) {
             User rootAdmin = new User();

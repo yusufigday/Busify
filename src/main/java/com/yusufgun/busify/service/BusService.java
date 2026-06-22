@@ -9,6 +9,7 @@ import com.yusufgun.busify.exception.ResourceNotFoundException;
 import com.yusufgun.busify.mapper.BusMapper;
 import com.yusufgun.busify.repository.BusRepository;
 import com.yusufgun.busify.repository.CompanyRepository;
+import com.yusufgun.busify.repository.RouteRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -21,6 +22,7 @@ public class BusService {
 
     private final BusRepository busRepository;
     private final CompanyRepository companyRepository;
+    private final RouteRepository routeRepository;
     private final BusMapper busMapper;
 
     public BusResponse createBus(BusRequest busRequest) {
@@ -79,6 +81,10 @@ public class BusService {
     public void deleteBus(Long busId) {
         Bus bus = busRepository.findById(busId)
                 .orElseThrow(() -> new ResourceNotFoundException("Bus with id: " + busId + " not found"));
+
+        if (routeRepository.existsByBusId(busId)) {
+            throw new IllegalStateException("Cannot delete bus with id '" + busId + "' because it has associated routes");
+        }
 
         busRepository.delete(bus);
     }
