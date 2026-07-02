@@ -9,18 +9,23 @@ import com.yusufgun.busify.entity.User;
 import com.yusufgun.busify.enums.Role;
 import com.yusufgun.busify.exception.ResourceAlreadyExistsException;
 import com.yusufgun.busify.exception.ResourceNotFoundException;
+import com.yusufgun.busify.logging.ElasticsearchLogService;
 import com.yusufgun.busify.mapper.TicketMapper;
 import com.yusufgun.busify.repository.RouteRepository;
 import com.yusufgun.busify.repository.TicketRepository;
 import com.yusufgun.busify.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
+@Slf4j
 @Service
 @RequiredArgsConstructor
 public class TicketService {
@@ -29,6 +34,7 @@ public class TicketService {
     private final RouteRepository routeRepository;
     private final UserRepository userRepository;
     private final TicketMapper ticketMapper;
+    private final ElasticsearchLogService elasticsearchLogService;
 
     @Transactional
     public TicketResponse buyTicket(TicketRequest ticketRequest) {
@@ -57,6 +63,20 @@ public class TicketService {
         ticket.setGender(ticketRequest.gender());
 
         Ticket savedTicket = ticketRepository.save(ticket);
+
+        Map<String, Object> ticketDetails = new HashMap<>();
+        ticketDetails.put("userId", currentUser.getId());
+        ticketDetails.put("userEmail", currentUser.getEmail());
+        ticketDetails.put("routeId", route.getId());
+        ticketDetails.put("origin", route.getOrigin());
+        ticketDetails.put("destination", route.getDestination());
+        ticketDetails.put("seatNumber", ticketRequest.seatNumber());
+        ticketDetails.put("price", route.getPrice());
+        ticketDetails.put("action", "TICKET_PURCHASED");
+
+        elasticsearchLogService.sendLog("busify-events", "INFO",
+                "Ticket purchased by user: " + currentUser.getEmail() + " -> " +
+                route.getOrigin() + "-" + route.getDestination() + " Seat: " + ticketRequest.seatNumber(), ticketDetails);
 
         return ticketMapper.toTicketResponse(savedTicket);
     }
