@@ -1,5 +1,6 @@
 package com.yusufgun.busify.service;
 
+import com.yusufgun.busify.config.RabbitMQConfig;
 import com.yusufgun.busify.dto.request.TicketRequest;
 import com.yusufgun.busify.dto.response.SeatInfoResponse;
 import com.yusufgun.busify.dto.response.TicketResponse;
@@ -35,6 +36,7 @@ public class TicketService {
     private final UserRepository userRepository;
     private final TicketMapper ticketMapper;
     private final ElasticsearchLogService elasticsearchLogService;
+    private final RabbitMQProducer rabbitMQProducer;
 
     @Transactional
     public TicketResponse buyTicket(TicketRequest ticketRequest) {
@@ -77,6 +79,20 @@ public class TicketService {
         elasticsearchLogService.sendLog("busify-events", "INFO",
                 "Ticket purchased by user: " + currentUser.getEmail() + " -> " +
                 route.getOrigin() + "-" + route.getDestination() + " Seat: " + ticketRequest.seatNumber(), ticketDetails);
+
+        Map<String, Object> ticketMessage = new HashMap<>();
+        ticketMessage.put("action", "TICKET_PURCHASED");
+        ticketMessage.put("email", currentUser.getEmail());
+        ticketMessage.put("ticketId", savedTicket.getId());
+        ticketMessage.put("route", route.getOrigin() + " → " + route.getDestination());
+        ticketMessage.put("seatNumber", ticketRequest.seatNumber());
+        ticketMessage.put("price", route.getPrice());
+
+        rabbitMQProducer.sendMessage(
+                RabbitMQConfig.EXCHANGE,
+                RabbitMQConfig.ROUTING_TICKET,
+                ticketMessage
+        );
 
         return ticketMapper.toTicketResponse(savedTicket);
     }
@@ -128,6 +144,17 @@ public class TicketService {
         if (!isOwner && !isAuthorizedStaff) {
             throw new IllegalStateException("Security Breach: You are not authorized to cancel this ticket!");
         }
+
+        Map<String, Object> cancelMessage = new HashMap<>();
+        cancelMessage.put("action", "TICKET_CANCELLED");
+        cancelMessage.put("email", currentUser.getEmail());
+        cancelMessage.put("ticketId", ticket.getId());
+
+        rabbitMQProducer.sendMessage(
+                RabbitMQConfig.EXCHANGE,
+                RabbitMQConfig.ROUTING_TICKET,
+                cancelMessage
+        );
 
         ticketRepository.delete(ticket);
     }

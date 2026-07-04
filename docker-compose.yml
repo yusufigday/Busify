@@ -34,6 +34,19 @@ services:
     depends_on:
       - elasticsearch
 
+  rabbitmq:
+    image: rabbitmq:3.13-management
+    container_name: busify-rabbitmq
+    environment:
+      - RABBITMQ_DEFAULT_USER=admin
+      - RABBITMQ_DEFAULT_PASS=admin123
+    ports:
+      - "5672:5672"
+      - "15672:15672"
+    volumes:
+      - rabbitmq_data:/var/lib/rabbitmq
+
+
   app:
     build: .
     container_name: busify-app
@@ -42,12 +55,19 @@ services:
     depends_on:
       - db
       - elasticsearch
+      - rabbitmq
     environment:
       SPRING_DATASOURCE_URL: jdbc:postgresql://db:5432/busify
       SPRING_DATASOURCE_USERNAME: postgres
       SPRING_DATASOURCE_PASSWORD: 1044
       SPRING_JPA_HIBERNATE_DDL_AUTO: update
+      SPRING_RABBITMQ_HOST: rabbitmq
+      SPRING_RABBITMQ_PORT: 5672
+      SPRING_RABBITMQ_USERNAME: admin
+      SPRING_RABBITMQ_PASSWORD: admin123
+
 
 volumes:
   postgres_data:
   elasticsearch_data:
+  rabbitmq_data:
