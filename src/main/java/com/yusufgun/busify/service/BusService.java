@@ -11,6 +11,8 @@ import com.yusufgun.busify.repository.BusRepository;
 import com.yusufgun.busify.repository.CompanyRepository;
 import com.yusufgun.busify.repository.RouteRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -25,6 +27,7 @@ public class BusService {
     private final RouteRepository routeRepository;
     private final BusMapper busMapper;
 
+    @CacheEvict(value = "buses", allEntries = true)
     public BusResponse createBus(BusRequest busRequest) {
         String cleanPlate = busRequest.plate().trim().toUpperCase();
 
@@ -44,12 +47,14 @@ public class BusService {
         return busMapper.toBusResponse(savedBus);
     }
 
+    @Cacheable(value = "buses")
     public List<BusResponse> getAllBuses() {
         return busRepository.findAll().stream()
                 .map(busMapper::toBusResponse)
                 .collect(Collectors.toList());
     }
 
+    @Cacheable(value = "buses", key = "#busId")
     public BusResponse getBus(Long busId) {
         Bus bus = busRepository.findById(busId)
                 .orElseThrow(() -> new ResourceNotFoundException("Bus with id: " + busId + " not found"));
@@ -57,6 +62,7 @@ public class BusService {
         return busMapper.toBusResponse(bus);
     }
 
+    @CacheEvict(value = "buses", allEntries = true)
     public BusResponse updateBus(Long busId, BusRequest updatedRequest) {
         Bus bus = busRepository.findById(busId)
                 .orElseThrow(() -> new ResourceNotFoundException("Bus with id: " + busId + " not found"));
@@ -78,6 +84,7 @@ public class BusService {
         return busMapper.toBusResponse(busRepository.save(bus));
     }
 
+    @CacheEvict(value = "buses", allEntries = true)
     public void deleteBus(Long busId) {
         Bus bus = busRepository.findById(busId)
                 .orElseThrow(() -> new ResourceNotFoundException("Bus with id: " + busId + " not found"));

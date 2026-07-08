@@ -15,7 +15,7 @@ public class RabbitMQProducer {
     public void sendMessage(String exchange, String routingKey, Object message) {
         try {
             rabbitTemplate.convertAndSend(exchange, routingKey, message);
-            log.info("The message was sent to RabbitMQ: exchange={}, routing={}, message={}",
+                log.info("The message was sent to RabbitMQ: exchange={}, routing={}, message={}",
                     exchange, routingKey, message);
         } catch (Exception e) {
             log.error("RabbitMQ failed to send message: {}", e.getMessage());

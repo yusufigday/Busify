@@ -9,6 +9,8 @@ import com.yusufgun.busify.mapper.CompanyMapper;
 import com.yusufgun.busify.repository.BusRepository;
 import com.yusufgun.busify.repository.CompanyRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -22,6 +24,7 @@ public class CompanyService {
     private final CompanyMapper companyMapper;
     private final BusRepository busRepository;
 
+    @CacheEvict(value = "companies", allEntries = true)
     public CompanyResponse createCompany(CompanyRequest companyRequest) {
         String cleanName = companyRequest.name().trim().toUpperCase();
         String cleanContact = companyRequest.contactNumber().trim();
@@ -38,6 +41,7 @@ public class CompanyService {
         return companyMapper.toCompanyResponse(savedCompany);
     }
 
+    @Cacheable(value = "companies", unless = "#result.isEmpty()")
     public List<CompanyResponse> getAllCompanies() {
         return companyRepository.findAll().stream()
                 .map(companyMapper::toCompanyResponse)
@@ -51,6 +55,7 @@ public class CompanyService {
         return companyMapper.toCompanyResponse(company);
     }
 
+    @CacheEvict(value = "companies", allEntries = true)
     public CompanyResponse updateCompany(Long companyId, CompanyRequest updatedRequest) {
         Company company = companyRepository.findById(companyId)
                 .orElseThrow(() -> new ResourceNotFoundException("Company with id '" + companyId + "' not found"));
@@ -74,6 +79,7 @@ public class CompanyService {
         return companyMapper.toCompanyResponse(companyRepository.save(company));
     }
 
+    @CacheEvict(value = "companies", allEntries = true)
     public void deleteCompany(Long companyId) {
         Company company = companyRepository.findById(companyId)
                 .orElseThrow(() -> new ResourceNotFoundException("Company with id '" + companyId + "' not found"));

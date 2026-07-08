@@ -46,6 +46,14 @@ services:
     volumes:
       - rabbitmq_data:/var/lib/rabbitmq
 
+  redis:
+    image: redis:7.2
+    container_name: busify-redis
+    command: redis-server --appendonly yes
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis_data:/data
 
   app:
     build: .
@@ -56,6 +64,7 @@ services:
       - db
       - elasticsearch
       - rabbitmq
+      - redis
     environment:
       SPRING_DATASOURCE_URL: jdbc:postgresql://db:5432/busify
       SPRING_DATASOURCE_USERNAME: postgres
@@ -65,9 +74,12 @@ services:
       SPRING_RABBITMQ_PORT: 5672
       SPRING_RABBITMQ_USERNAME: admin
       SPRING_RABBITMQ_PASSWORD: admin123
+      SPRING_DATA_REDIS_HOST: redis
+      SPRING_DATA_REDIS_PORT: 6379
 
 
 volumes:
   postgres_data:
   elasticsearch_data:
   rabbitmq_data:
+  redis_data:

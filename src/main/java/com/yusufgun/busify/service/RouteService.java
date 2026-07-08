@@ -11,6 +11,8 @@ import com.yusufgun.busify.repository.BusRepository;
 import com.yusufgun.busify.repository.RouteRepository;
 import com.yusufgun.busify.repository.TicketRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -43,12 +45,14 @@ public class RouteService {
                 .collect(Collectors.toList());
     }
 
+    @Cacheable(value = "routes", unless = "#result.isEmpty()")
     public List<RouteResponse> getAllRoutes() {
         return routeRepository.findAll().stream()
                 .map(routeMapper::toRouteResponse)
                 .collect(Collectors.toList());
     }
 
+    @CacheEvict(value = "routes", allEntries = true)
     public RouteResponse createRoute(RouteRequest request) {
         Bus bus = busRepository.findById(request.busId())
                 .orElseThrow(() -> new ResourceNotFoundException("Bus not found with id: " + request.busId()));
@@ -65,6 +69,7 @@ public class RouteService {
         return routeMapper.toRouteResponse(savedRoute);
     }
 
+    @CacheEvict(value = "routes", allEntries = true)
     public RouteResponse updateRoute(Long routeId, RouteRequest updatedRoute) {
         Route route = routeRepository.findById(routeId)
                 .orElseThrow(() -> new ResourceNotFoundException("Route not found with id: " + routeId));
@@ -82,6 +87,7 @@ public class RouteService {
         return routeMapper.toRouteResponse(routeRepository.save(route));
     }
 
+    @CacheEvict(value = "routes", allEntries = true)
     public void deleteRoute(Long routeId) {
         Route route = routeRepository.findById(routeId)
                 .orElseThrow(() -> new ResourceNotFoundException("Route not found with id: " + routeId));
