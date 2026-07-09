@@ -20,30 +20,35 @@ public class RouteController {
     private final RouteService routeService;
 
     @GetMapping("/allRoutes")
-    public ResponseEntity<List<RouteResponse>> getAllRoutes(){
+    public ResponseEntity<List<RouteResponse>> getAllRoutes() {
         return ResponseEntity.ok(routeService.getAllRoutes());
     }
 
     @GetMapping("/search")
-    public ResponseEntity<List<RouteResponse>> searchRoutes(@ModelAttribute RouteSearchRequest searchRequest){
+    public ResponseEntity<List<RouteResponse>> searchRoutes(@ModelAttribute RouteSearchRequest searchRequest) {
         return ResponseEntity.ok(routeService.searchRoutes(searchRequest));
+    }
+
+    @GetMapping("/popular")
+    public ResponseEntity<List<RouteResponse>> getPopularRoutes(@RequestParam(defaultValue = "5") int limit) {
+        return ResponseEntity.ok(routeService.getPopularRoutes(limit));
     }
 
     @PostMapping("/add")
     @PreAuthorize("hasAnyRole('ADMIN', 'STAFF')")
-    public ResponseEntity<RouteResponse> addRoute(@Valid @RequestBody RouteRequest request){
+    public ResponseEntity<RouteResponse> addRoute(@Valid @RequestBody RouteRequest request) {
         return ResponseEntity.ok(routeService.createRoute(request));
     }
 
     @PutMapping("/update/{routeId}")
     @PreAuthorize("hasAnyRole('ADMIN', 'STAFF')")
-    public ResponseEntity<RouteResponse> updateRoute(@PathVariable Long routeId, @Valid @RequestBody RouteRequest updatedRoute){
-        return ResponseEntity.ok(routeService.updateRoute(routeId,updatedRoute));
+    public ResponseEntity<RouteResponse> updateRoute(@PathVariable Long routeId, @Valid @RequestBody RouteRequest updatedRoute) {
+        return ResponseEntity.ok(routeService.updateRoute(routeId, updatedRoute));
     }
 
     @DeleteMapping("/delete/{routeId}")
     @PreAuthorize("hasAnyRole('ADMIN', 'STAFF')")
-    public ResponseEntity<Void> deleteRoute(@PathVariable Long routeId){
+    public ResponseEntity<Void> deleteRoute(@PathVariable Long routeId) {
         routeService.deleteRoute(routeId);
         return ResponseEntity.noContent().build();
     }

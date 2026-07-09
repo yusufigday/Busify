@@ -21,6 +21,7 @@ public class AuthenticationController {
     private final TokenBlacklistService tokenBlacklistService;
 
     @PostMapping("/register")
+    @com.yusufgun.busify.annotation.RateLimited(limit = 5, duration = 60)
     public ResponseEntity<AuthenticationResponse> register(
             @Valid @RequestBody RegisterRequest request
     ) {
@@ -28,6 +29,7 @@ public class AuthenticationController {
     }
 
     @PostMapping("/authenticate")
+    @com.yusufgun.busify.annotation.RateLimited(limit = 5, duration = 60)
     public ResponseEntity<AuthenticationResponse> authenticate(
             @Valid @RequestBody AuthenticationRequest request
     ) {

@@ -13,9 +13,12 @@ import com.yusufgun.busify.repository.TicketRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.Cacheable;
+import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
 
+import java.util.Collections;
 import java.util.List;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 @Service
@@ -26,6 +29,7 @@ public class RouteService {
     private final RouteMapper routeMapper;
     private final BusRepository busRepository;
     private final TicketRepository ticketRepository;
+    private final RedisTemplate<String, Object> redisTemplate;
 
     public List<RouteResponse> searchRoutes(RouteSearchRequest searchRequest) {
         String cleanOrigin = (searchRequest.origin() != null && !searchRequest.origin().isBlank())
@@ -98,4 +102,21 @@ public class RouteService {
 
         routeRepository.delete(route);
     }
+
+    public List<RouteResponse> getPopularRoutes(int limit) {
+        Set<Object> popularRouteIds = redisTemplate.opsForZSet().reverseRange("popularRoutes", 0, limit - 1);
+
+        if (popularRouteIds == null || popularRouteIds.isEmpty()) {
+            return Collections.emptyList();
+        }
+
+        List<Long> routeIds = popularRouteIds.stream()
+                .map(id -> Long.valueOf(id.toString()))
+                .collect(Collectors.toList());
+
+        return routeRepository.findAllById(routeIds).stream()
+                .map(routeMapper::toRouteResponse)
+                .collect(Collectors.toList());
+    }
+
 }

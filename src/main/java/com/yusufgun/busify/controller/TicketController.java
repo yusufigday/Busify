@@ -21,6 +21,7 @@ public class TicketController {
     private final TicketService ticketService;
 
     @PostMapping("/buy")
+    @com.yusufgun.busify.annotation.RateLimited(limit = 10, duration = 60)
     public ResponseEntity<TicketResponse> buyTicket(@Valid @RequestBody TicketRequest ticketRequest) {
         return ResponseEntity.ok(ticketService.buyTicket(ticketRequest));
     }
