@@ -25,8 +25,7 @@ public class RedisConfig {
     @Value("${spring.cache.redis.time-to-live:300000}")
     private long cacheTimeToLive;
 
-    @Bean
-    public ObjectMapper redisObjectMapper() {
+    private ObjectMapper redisObjectMapper() {
         PolymorphicTypeValidator typeValidator = BasicPolymorphicTypeValidator
                 .builder()
                 .allowIfBaseType(Object.class)
@@ -39,12 +38,11 @@ public class RedisConfig {
     }
 
     @Bean
-    public RedisTemplate<String, Object> redisTemplate(RedisConnectionFactory connectionFactory,
-                                                        ObjectMapper redisObjectMapper) {
+    public RedisTemplate<String, Object> redisTemplate(RedisConnectionFactory connectionFactory) {
         RedisTemplate<String, Object> template = new RedisTemplate<>();
         template.setConnectionFactory(connectionFactory);
 
-        GenericJackson2JsonRedisSerializer serializer = new GenericJackson2JsonRedisSerializer(redisObjectMapper);
+        GenericJackson2JsonRedisSerializer serializer = new GenericJackson2JsonRedisSerializer(redisObjectMapper());
 
         template.setKeySerializer(new StringRedisSerializer());
         template.setValueSerializer(serializer);
@@ -55,9 +53,8 @@ public class RedisConfig {
     }
 
     @Bean
-    public RedisCacheManager cacheManager(RedisConnectionFactory connectionFactory,
-                                          ObjectMapper redisObjectMapper) {
-        GenericJackson2JsonRedisSerializer serializer = new GenericJackson2JsonRedisSerializer(redisObjectMapper);
+    public RedisCacheManager cacheManager(RedisConnectionFactory connectionFactory) {
+        GenericJackson2JsonRedisSerializer serializer = new GenericJackson2JsonRedisSerializer(redisObjectMapper());
 
         RedisCacheConfiguration config = RedisCacheConfiguration.defaultCacheConfig()
                 .entryTtl(Duration.ofMillis(cacheTimeToLive))

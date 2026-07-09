@@ -13,6 +13,8 @@ import com.yusufgun.busify.exception.ResourceNotFoundException;
 import com.yusufgun.busify.logging.ElasticsearchLogService;
 import com.yusufgun.busify.mapper.TicketMapper;
 import com.yusufgun.busify.repository.RouteRepository;
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.Cacheable;
 import com.yusufgun.busify.repository.TicketRepository;
 import com.yusufgun.busify.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
@@ -38,7 +40,15 @@ public class TicketService {
     private final ElasticsearchLogService elasticsearchLogService;
     private final RabbitMQProducer rabbitMQProducer;
 
+    @Cacheable(value = "tickets", unless = "#result.isEmpty()")
+    public List<TicketResponse> getAllTickets() {
+        return ticketRepository.findAll().stream()
+                .map(ticketMapper::toTicketResponse)
+                .collect(Collectors.toList());
+    }
+
     @Transactional
+    @CacheEvict(value = "tickets", allEntries = true)
     public TicketResponse buyTicket(TicketRequest ticketRequest) {
         User currentUser = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
 
@@ -132,6 +142,7 @@ public class TicketService {
     }
 
     @Transactional
+    @CacheEvict(value = "tickets", allEntries = true)
     public void cancelTicket(Long id) {
         Ticket ticket = ticketRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Ticket not found with id: " + id));
