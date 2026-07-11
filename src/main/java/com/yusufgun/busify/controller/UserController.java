@@ -22,19 +22,20 @@ public class UserController {
 
     @GetMapping("/allUsers")
     @PreAuthorize("hasAnyRole('ADMIN', 'STAFF')")
-    public ResponseEntity<List<UserResponse>> getAllUsers(){
+    public ResponseEntity<List<UserResponse>> getAllUsers() {
         return ResponseEntity.ok(userService.getAllUsers());
     }
 
     @GetMapping("/{tcNo}")
     @PreAuthorize("#tcNo == authentication.principal.tcNo or hasAnyRole('ADMIN', 'STAFF')")
-    public ResponseEntity<UserResponse> getUser(@PathVariable String tcNo){
+    public ResponseEntity<UserResponse> getUser(@PathVariable String tcNo) {
         return ResponseEntity.ok(userService.getUser(tcNo));
     }
 
     @PutMapping("/update/{tcNo}")
     @PreAuthorize("#tcNo == authentication.principal.tcNo or hasAnyRole('ADMIN', 'STAFF')")
-    public ResponseEntity<UserResponse> updateUser(@PathVariable String tcNo,@Valid @RequestBody UserUpdateRequest updatedUser) {
+    public ResponseEntity<UserResponse> updateUser(@PathVariable String tcNo,
+            @Valid @RequestBody UserUpdateRequest updatedUser) {
         return ResponseEntity.ok(userService.updateUser(tcNo, updatedUser));
     }
 

@@ -25,13 +25,14 @@ public class RateLimitingAspect {
         String methodName = signature.getName();
 
         String key = "rate_limit:" + ipAddress + ":" + methodName;
-        Integer currentCount = (Integer) redisTemplate.opsForValue().get(key);
+        Object rawCount = redisTemplate.opsForValue().get(key);
+        Integer currentCount = rawCount != null ? ((Number) rawCount).intValue() : null;
         if (currentCount == null) {
             redisTemplate.opsForValue().set(key, 1, Duration.ofSeconds(rateLimited.duration()));
         } else if (currentCount < rateLimited.limit()) {
             redisTemplate.opsForValue().increment(key);
         } else {
-            throw new IllegalStateException("Çok fazla istek gönderdiniz. Lütfen daha sonra tekrar deneyin.");
+            throw new IllegalStateException("You have sent too many requests. Please try again later.");
         }
         return joinPoint.proceed();
     }

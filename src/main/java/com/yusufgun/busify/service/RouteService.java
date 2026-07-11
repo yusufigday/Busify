@@ -13,6 +13,7 @@ import com.yusufgun.busify.repository.TicketRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.Cacheable;
+import org.springframework.cache.annotation.Caching;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
 
@@ -31,6 +32,7 @@ public class RouteService {
     private final TicketRepository ticketRepository;
     private final RedisTemplate<String, Object> redisTemplate;
 
+    @Cacheable(value = "routeSearches", key = "#searchRequest.toString()", unless = "#result.isEmpty()")
     public List<RouteResponse> searchRoutes(RouteSearchRequest searchRequest) {
         String cleanOrigin = (searchRequest.origin() != null && !searchRequest.origin().isBlank())
                 ? searchRequest.origin().trim().toUpperCase()
@@ -56,7 +58,10 @@ public class RouteService {
                 .collect(Collectors.toList());
     }
 
-    @CacheEvict(value = "routes", allEntries = true)
+    @Caching(evict = {
+            @CacheEvict(value = "routes", allEntries = true),
+            @CacheEvict(value = "routeSearches", allEntries = true)
+    })
     public RouteResponse createRoute(RouteRequest request) {
         Bus bus = busRepository.findById(request.busId())
                 .orElseThrow(() -> new ResourceNotFoundException("Bus not found with id: " + request.busId()));
@@ -73,7 +78,10 @@ public class RouteService {
         return routeMapper.toRouteResponse(savedRoute);
     }
 
-    @CacheEvict(value = "routes", allEntries = true)
+    @Caching(evict = {
+            @CacheEvict(value = "routes", allEntries = true),
+            @CacheEvict(value = "routeSearches", allEntries = true)
+    })
     public RouteResponse updateRoute(Long routeId, RouteRequest updatedRoute) {
         Route route = routeRepository.findById(routeId)
                 .orElseThrow(() -> new ResourceNotFoundException("Route not found with id: " + routeId));
@@ -91,7 +99,10 @@ public class RouteService {
         return routeMapper.toRouteResponse(routeRepository.save(route));
     }
 
-    @CacheEvict(value = "routes", allEntries = true)
+    @Caching(evict = {
+            @CacheEvict(value = "routes", allEntries = true),
+            @CacheEvict(value = "routeSearches", allEntries = true)
+    })
     public void deleteRoute(Long routeId) {
         Route route = routeRepository.findById(routeId)
                 .orElseThrow(() -> new ResourceNotFoundException("Route not found with id: " + routeId));

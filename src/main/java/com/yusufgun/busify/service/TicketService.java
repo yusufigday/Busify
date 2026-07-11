@@ -43,7 +43,7 @@ public class TicketService {
     private final TicketMapper ticketMapper;
     private final ElasticsearchLogService elasticsearchLogService;
     private final RabbitMQProducer rabbitMQProducer;
-    private final RedisTemplate redisTemplate;
+    private final RedisTemplate<String, Object> redisTemplate;
     private final CacheManager cacheManager;
 
     @Cacheable(value = "tickets", unless = "#result.isEmpty()")
