@@ -64,6 +64,12 @@ dependencies {
     implementation 'org.springframework.boot:spring-boot-starter-amqp'
 
     implementation 'org.springframework.boot:spring-boot-starter-data-redis'
+
+    //Metrikleri toplamak için actuator kullanıyoruz.
+    implementation 'org.springframework.boot:spring-boot-starter-actuator'
+
+    //Metrikleri Prometheus'un anlayacağı formata çevirmek için micrometer kullanıyoruz.
+    implementation 'io.micrometer:micrometer-registry-prometheus'
 }
 
 tasks.named('test') {

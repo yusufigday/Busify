@@ -29,6 +29,7 @@ Busify is a robust backend REST API built with Java and Spring Boot for managing
 * **Redis 7.2** — Caching layer & JWT token blacklist
 * **RabbitMQ 3.13** — Asynchronous event messaging
 * **Elasticsearch 8.15** — Centralized structured logging
+* **Prometheus & Grafana** — Real-time performance monitoring and metrics visualization
 * **Docker & Docker Compose**
 * **Swagger (SpringDoc OpenAPI 3)**
 * **MapStruct & Lombok**
@@ -58,6 +59,8 @@ The easiest way to run Busify is by using Docker. You do not need to install Jav
 | `busify-rabbitmq` | `5672` / `15672` | RabbitMQ (Management UI on 15672) |
 | `busify-elasticsearch` | `9200` | Elasticsearch |
 | `busify-kibana` | `5601` | Kibana dashboard |
+| `prometheus` | `9090` | Prometheus metrics scraper |
+| `grafana` | `3000` | Grafana monitoring dashboard |
 
 **Useful Docker Commands:**
 * View application logs: `docker logs -f busify-app`

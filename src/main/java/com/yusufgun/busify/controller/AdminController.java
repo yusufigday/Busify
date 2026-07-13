@@ -1,5 +1,6 @@
 package com.yusufgun.busify.controller;
 
+import com.yusufgun.busify.dto.request.ChangeRoleRequest;
 import com.yusufgun.busify.dto.response.TicketResponse;
 import com.yusufgun.busify.enums.Role;
 import com.yusufgun.busify.service.TicketService;
@@ -21,13 +22,10 @@ public class AdminController {
     private final TicketService ticketService;
 
     @PutMapping("/change-role")
-    public ResponseEntity<String> changeUserRole(
-            @RequestParam String email,
-            @RequestParam Role newRole
-    ){
-        return ResponseEntity.ok(userService.updateUserRole(email, newRole));
+    public ResponseEntity<String> changeUserRole(@RequestBody ChangeRoleRequest changeRoleRequest)
+    {
+        return ResponseEntity.ok(userService.updateUserRole(changeRoleRequest.email(), changeRoleRequest.newRole()));
     }
-
     @GetMapping("/tickets")
     public ResponseEntity<List<TicketResponse>> getAllTickets() {
         return ResponseEntity.ok(ticketService.getAllTickets());
